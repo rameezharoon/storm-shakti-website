@@ -161,3 +161,71 @@ logo <img> https://github.com/rameezharoon/storm-shakti-website/blob/main/202411
 
 </body>
 </html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STORM SHAKTI - Upload Video to YouTube</title>
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+  <h2>Upload a Video to STORM SHAKTI Channel</h2>
+  <input type="file" id="video-file" accept="video/*"><br><br>
+  <input type="text" id="title" placeholder="Video Title"><br><br>
+  <textarea id="description" placeholder="Video Description"></textarea><br><br>
+
+  <button onclick="authenticate().then(loadClient)">Sign In with Google</button>
+  <button onclick="uploadVideo()">Upload Video</button>
+
+  <script>
+    const CLIENT_ID = "138921636701-fgmjgs1tpf7gqal2o9hbc2k3cptsbr3t.apps.googleusercontent.com";
+    const API_KEY = "AIzaSyBXIO8ik2FIchv8pdNDYRb30xDOzeAlLaI";
+
+    function authenticate() {
+      return gapi.auth2.getAuthInstance()
+        .signIn({ scope: "https://www.googleapis.com/auth/youtube.upload" })
+        .then(() => console.log("Signed in"))
+        .catch(err => console.error("Sign-in error", err));
+    }
+
+    function loadClient() {
+      gapi.client.setApiKey(API_KEY);
+      return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+        .then(() => console.log("YouTube API loaded"))
+        .catch(err => console.error("API load error", err));
+    }
+
+    function uploadVideo() {
+      const file = document.getElementById("video-file").files[0];
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+
+      const metadata = {
+        snippet: {
+          title: title,
+          description: description
+        },
+        status: {
+          privacyStatus: "public"
+        }
+      };
+
+      const uploader = gapi.client.youtube.videos.insert({
+        part: "snippet,status",
+        resource: metadata,
+        media: {
+          body: file
+        }
+      });
+
+      uploader.execute(response => {
+        console.log("Upload response:", response);
+        alert("Video uploaded! Video ID: " + response.id);
+      });
+    }
+
+    gapi.load("client:auth2", () => {
+      gapi.auth2.init({ client_id: CLIENT_ID });
+    });
+  </script>
+</body>
+</html>
