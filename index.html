@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STORM SHAKTI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header img.banner {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+    }
+    .logo {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      margin-top: -50px;
+      border: 4px solid #fff;
+      background-color: #fff;
+    }
+    h1 {
+      margin: 10px 0 0 0;
+      font-size: 2em;
+    }
+    .videos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    iframe {
+      width: 360px;
+      height: 215px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="banner" src="YOUR_BANNER_URL_HERE" alt="Channel Banner">
+    <img class="logo" src="YOUR_LOGO_URL_HERE" alt="Channel Logo">
+    <h1>STORM SHAKTI</h1>
+  </header>
+  <div class="videos" id="videoList"></div>
+
+  <script>
+    const channelId = "YOUR_CHANNEL_ID_HERE";
+    const apiKey = "YOUR_YOUTUBE_API_KEY_HERE";
+
+    fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=6`)
+      .then(response => response.json())
+      .then(data => {
+        const videoList = document.getElementById('videoList');
+        data.items.forEach(item => {
+          if (item.id.kind === 'youtube#video') {
+            const videoId = item.id.videoId;
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${videoId}`;
+            videoList.appendChild(iframe);
+          }
+        });
+      })
+      .catch(error => console.error('Error fetching videos:', error));
+  </script>
+</body>
+</html>
